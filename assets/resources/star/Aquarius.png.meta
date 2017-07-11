@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "804c530b-ad35-4957-9d03-a8ecba9f3a92",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "Aquarius": {
+      "ver": "1.0.3",
+      "uuid": "f7659db1-37c2-4010-9d21-63df49180840",
+      "rawTextureUuid": "804c530b-ad35-4957-9d03-a8ecba9f3a92",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 200,
+      "height": 200,
+      "rawWidth": 200,
+      "rawHeight": 200,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
