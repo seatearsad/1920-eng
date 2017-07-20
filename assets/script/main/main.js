@@ -4,6 +4,12 @@ cc.Class({
     properties: {
         load:cc.Node,
         load_txt:cc.Label,
+        main_page:cc.Node,
+        dice_bg:cc.Node,
+        dice_game:cc.Node,
+        start_btn:cc.Button,
+        cash_label:cc.Label,
+        dice_anim:cc.Node
     },
 
     // use this for initialization
@@ -11,14 +17,26 @@ cc.Class({
         cc.log("rotation",this.node.rotation);
         if(!cacheManager.isInit)
             cacheManager.init();
+        else
+            this.main_page.getComponent("main_page").loadCover();
+        
+        cacheManager.index = this;
+        //startBtn
+        this.start_btn.node.on("click",this.startGame,this);
         //slotScene
         // this.load.getComponent("loading").main = this;
         // cacheManager.main = this;
+
+        //测试动画
+        // this.dice_anim.getComponent(cc.Animation).play("dice");
+        // this.dice_anim.getComponent(cc.Animation).stop("dice");
 
         if(typeof(cacheManager.playerInfo.id) == "undefined"){
             this.load.active = true;
             this.load_txt.node.active = true;
             this.load.getComponent("loading").main = this;
+        }else{
+            this.updatePlayer();
         }
         //监听游戏进入后台
         cc.game.on(cc.game.EVENT_HIDE,this.gameHide);
@@ -35,6 +53,11 @@ cc.Class({
         })
         //监看FPS
         // cc.director.setDisplayStats(true);
+        this.main_page.getComponent("main_page").main = this;
+        this.dice_game.getComponent("diceGame").main = this;
+    },
+    startGame:function(){
+        this.main_page.getComponent("main_page").enterGame();
     },
     gameHide:function(){
         cc.log("gameHide");
@@ -51,11 +74,14 @@ cc.Class({
         } 
     },
     loadGameLevel:function(){
-        this.removeLoading();
+        // this.removeLoading();
+        this.main_page.getComponent("main_page").loadCover();
     },
     removeLoading:function(){
         this.load.removeFromParent();
         this.load_txt.node.removeFromParent();
+        this.updatePlayer();
+        // this.main_page.getComponent("main_page").loadCover();
     },
     showMessage:function(str){
         this.showMessageTxt = cacheManager.language[str];
@@ -76,6 +102,10 @@ cc.Class({
     },
     changeExit:function(){
         this.isExit = false;
+    },
+    updatePlayer:function(){
+        var playerInfo = cacheManager.playerInfo;
+        this.cash_label.string = playerInfo.curr_amount;
     },
     // called every frame, uncomment this function to activate update callback
     update: function (dt) {

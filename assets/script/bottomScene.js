@@ -46,8 +46,14 @@ cc.Class({
     },
     startGame:function(){
         cc.log("start game!");
-        if(cacheManager.playerInfo.free_times[this.main.gameLevelId].free > 0){//如果停止了免费旋转
+            //上次免费未结束返回后进行处理
+        if(!this.main.jackpot.getComponent("slotScene").isFree && cacheManager.playerInfo.free_times[this.main.gameLevelId].free > 0){
+            if(this.main.jackpot.getComponent("slotScene").isAuto){
+                this.main.jackpot.getComponent("slotScene").clearAuto();
+                this.main.jackpot.getComponent("slotScene").nextAuto = true;
+            }
             this.main.jackpot.getComponent("slotScene").freeStart();
+            this.main.top.getComponent("topScene").show_uppop(1);
             this.startFree();
         }else{
             this.main.jackpot.getComponent("slotScene").startSlots();

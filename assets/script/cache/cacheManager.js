@@ -10,6 +10,7 @@ window.cacheManager = {
     userInfo:{},
     playerInfo:{},
     auto_times:0,
+    loadGameId:0,
     init:function(){
         cc.loader.loadRes(dataList.language,this.loadLanguage);
         cc.loader.loadRes(dataList.gameLevelData,this.loadGameLevelList);

@@ -18,6 +18,7 @@ cc.Class({
         this.col_num = 0;
 
         this.cover.on("touchstart",this.emptyFunc,this);
+        this.cover.on("mousewheel",this.emptyFunc,this);
 
         this.symbolNum = new Array();
 
@@ -37,6 +38,9 @@ cc.Class({
         var line_url = "pre/line_" + lineNum;
         var loadLine = this.loadLine.bind(this);
         cc.loader.loadRes(line_url, loadLine);
+        //big mega
+        this.bigNum = 2;
+        this.mageNum = 3;
     },
     emptyFunc:function (event) {
         event.stopPropagation();
@@ -49,21 +53,30 @@ cc.Class({
         //先加载图标资源
         this.symbolList = cacheManager.gameLevelList[this.main.gameLevelId].symbolList;
         this.symbolRes = [];
-        
+
+        var loadColumnRes = this.loadColumnRes.bind(this);
+
         for(var i in this.symbolList){
             if(!isNaN(i)){
                 var url = this.symbolList[i].icon;
                 this.symbolRes[this.symbolList[i].id] = {};
+                this.symbolRes[i].id = this.symbolList[i].id;
+                this.symbolRes[i].totalNum = this.symbolList.length;
+                this.symbolRes[i].callFun = loadColumnRes;
                 var loadCallBack = this.loadCallBack.bind(this.symbolRes[i]);
                 cc.loader.loadRes(url,cc.SpriteFrame,loadCallBack);
             }
         }
-
+    },
+    loadColumnRes:function(){
         var loadColumn = this.loadColumn.bind(this);
         cc.loader.loadRes("pre/column", loadColumn);
     },
     loadCallBack:function(err, res){//this.symbolRes[i]为此函数的this
         this.res = res;
+        if(this.id == (this.totalNum-1)){
+            this.callFun();
+        }
     },
     loadColumn:function(err, prefab){
         this.col_prefab = prefab;
@@ -166,10 +179,21 @@ cc.Class({
             this.main.updatePlayer();
             this.main.bottom.getComponent("bottomScene").updateWin(this.gameResult.payAmount);
             //所赢数值展现
-            if(this.gameResult.payAmount > 0){
-                this.main.showWinNum(this.gameResult.payAmount);
+            if(this.gameResult.isWinFree){//展现scatter中奖
+                this.main.showWinNum(this.gameResult.payAmount,-1);
+            }else if(this.gameResult.payAmount > 0){
+                var betAmount = cacheManager.playerInfo.level_bet[this.main.gameLevelId].bet * cacheManager.playerInfo.level_line[this.main.gameLevelId].line;
+                var mult = Math.floor(this.gameResult.payAmount/betAmount);
+                var stat = 0;
+                if(mult >= this.mageNum) stat = 2;
+                if(mult >= this.bigNum && mult < this.mageNum) stat = 1;
+
+                for(var i=0;i<this.gameResult.lineList.length;++i){
+                    if(this.gameResult.lineList[i].num == 5) stat = 3;
+                }
+                this.main.showWinNum(this.gameResult.payAmount,stat);
             }
-            
+            //结束免费旋转
             if(this.isFree){
                 if(cacheManager.playerInfo.free_times[this.main.gameLevelId].free <= 0){
                     this.isFree = false;
@@ -219,7 +243,7 @@ cc.Class({
                     }
                 }
             }
-
+            
             //中奖线展示
             var winLine = this.gameResult.lineList;
             var lineArr = new Array();
@@ -254,6 +278,9 @@ cc.Class({
     },
     httpResp:function(resp){//协议回调
         cacheManager.initPlayerInfo(resp.playerInfo);
+        //0次免费，取消顶部标签
+        if(cacheManager.playerInfo.free_times[this.main.gameLevelId].free == 0 && this.isFree && !this.nextAuto)
+            this.main.top.getComponent("topScene").hidden_uppop();
         //this.main.updatePlayer();
         this.main.bottom.getComponent("bottomScene").updatePlayer();
         //赋值spin的结果
@@ -318,9 +345,12 @@ cc.Class({
     //     col.getComponent(cc.ScrollView).enabled = false;
     // },
     startSlots:function(){
+        //0次自动，取消顶部标签
+        if(cacheManager.auto_times == 0 && this.isAuto)
+            this.main.top.getComponent("topScene").hidden_uppop();
         //取消中奖线展示
         this.line_total.getComponent("lineManager").removeLine(cacheManager.gameLevelList[this.main.gameLevelId].line);
-        var send = {};
+        var send = {"gameId":this.main.gameLevelId};
         message.sendData(messageDefine.game_result,send,this);
     },
     autoStart:function(){

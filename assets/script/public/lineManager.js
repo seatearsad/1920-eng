@@ -20,8 +20,12 @@ cc.Class({
     },
     showLine:function(lineArr){
         for(var i=0;i<lineArr.length;++i){
-            var lineN = "line_" + (lineArr[i] + 1);cc.log(lineN);
-            this.node.getChildByName(lineN).active = true;
+            var lineNum = lineArr[i] + 1;
+            if(!isNaN(lineNum)){
+                var lineN = "line_" + lineNum;cc.log(lineN);
+                this.node.getChildByName(lineN).active = true;
+            }
+            
         }
     },
     removeLine:function(allNum){

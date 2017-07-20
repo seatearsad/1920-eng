@@ -4,6 +4,7 @@ module.exports = {
         var gameLevel = {};
         gameLevel.id = obj.id;
         gameLevel.symbol = obj.symbol;
+        gameLevel.cover = obj.cover;
         gameLevel.ui = obj.ui;
         gameLevel.line = obj.line;
         gameLevel.bet = obj.bet;
@@ -29,7 +30,7 @@ module.exports = {
         // 暂时没有加载其他数据，所以等加载完所有图表数据后运行cc.log(this.allNum,this.currNum);
         if(this.allNum == this.currNum){
             cc.log("LOADall");
-            // cacheManager.main.loadGameLevel(); 
+            cacheManager.index.loadGameLevel();
         }
     }
 }

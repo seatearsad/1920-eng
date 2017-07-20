@@ -2,14 +2,16 @@
 	{
 		"id":0,
 		"symbol":"symbol_2",
-		"ui":"ui_1",
+		"cover":"zodiac_cover",
+		"ui":"zodiac",
 		"line":9,
-		"bet":[1,2,5,100]
+		"bet":[1,2,5,10]
 	},
 	{
 		"id":1,
 		"symbol":"symbol_1",
-		"ui":"ui_2",
+		"cover":"fruits_cover",
+		"ui":"fruits",
 		"line":15,
 		"bet":[1,2,5,10]
 	}

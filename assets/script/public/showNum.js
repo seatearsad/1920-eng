@@ -33,10 +33,12 @@ cc.Class({
                 this.getComponent(cc.Label).string = this.currNum;
             }
         }
-        if(this.totalTime > 1 && this.isEnd){
+        if(this.totalTime > 1.5 && this.isEnd){
             this.node.parent.active = false;
             this.main.occ_bg.active = false;
+            this.main.back_light.active = false;
             this.main.isShowAddWinNum = false;
+            this.main.showLight = false;
         }
     }
 });
