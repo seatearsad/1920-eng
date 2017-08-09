@@ -3,7 +3,7 @@ cc.Class({
 
     properties: {
         cover:cc.Node,
-        fantan:20,
+        fantan:800,
         standard_time:0.6,
         total_col:5,
     },
@@ -170,7 +170,15 @@ cc.Class({
     },
     scroollCallBack:function(event){//滚动停止监控
         var col = event.detail;
-        col.getComponent(cc.ScrollView).content.height = col.getComponent(cc.ScrollView).content.height - this.fantan;
+        var callFun = cc.callFunc(function(){
+            col.getComponent(cc.ScrollView).content.height = col.getComponent(cc.ScrollView).content.height - 4;
+        },this);
+        var seq = cc.sequence(
+            cc.delayTime(0.01),
+            callFun
+        )
+        var rep =  cc.repeat(seq, this.fantan/4);
+        col.getComponent(cc.ScrollView).content.runAction(rep);
         //关闭监听
         col.node.off('scroll-ended',this.scroollCallBack,this);
         this.curr_stop_col = col.node.tag;
@@ -179,7 +187,21 @@ cc.Class({
             this.main.updatePlayer();
             this.main.bottom.getComponent("bottomScene").updateWin(this.gameResult.payAmount);
             //所赢数值展现
-            if(this.gameResult.isWinFree){//展现scatter中奖
+            if(this.gameResult.isWinBonus){//调用Bonus
+                this.main.showWinNum(this.gameResult.payAmount,-2);
+                var j = 0;
+                var bonusList = [];
+                for(var i=0;i<this.gameResult.lineList.length;++i){
+                    if(this.gameResult.lineList[i].isBonus > 0){
+                        //记录有几次Bonus游戏，传给main，之后处理多次展现，统计各次游戏和，返还给服务器
+                        bonusList[j] = this.gameResult.lineList[i];
+                        j++;
+                    }
+                }
+                cc.log("bonusList",bonusList.length);
+                //赋值给主页面的bonusList
+                this.main.bonusList = bonusList;
+            }else if(this.gameResult.isWinFree){//展现scatter中奖
                 this.main.showWinNum(this.gameResult.payAmount,-1);
             }else if(this.gameResult.payAmount > 0){
                 var betAmount = cacheManager.playerInfo.level_bet[this.main.gameLevelId].bet * cacheManager.playerInfo.level_line[this.main.gameLevelId].line;

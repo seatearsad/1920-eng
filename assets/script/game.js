@@ -16,7 +16,8 @@ cc.Class({
         super_bg:cc.Node,
         back_light:cc.Node,
         occ_bg:cc.Node,
-        win_free:cc.Node
+        win_free:cc.Node,
+        win_bouns:cc.Node
     },
 
     // use this for initialization
@@ -58,6 +59,14 @@ cc.Class({
 
         this.isShowAddWinNum = false;
         this.showFree = false;
+        this.showBouns = false;
+        this.enterBonus = false;
+        this.bonusTotalScore = 0;
+
+        //加载Bonus
+        var bonus_dir = "pre/" + cacheManager.gameLevelList[this.gameLevelId].bonus;
+        var loadBonus = this.loadBonus.bind(this);
+        cc.loader.loadRes(bonus_dir,loadBonus);
     },
     getLoadNum:function(){
         this.loadNum++;
@@ -87,6 +96,13 @@ cc.Class({
         if(lNum == this.totalNum){
             this.callFun();
         }
+    },
+    loadBonus:function(err,res){
+        this.bonusGame = res;
+
+        // this.bonusNode = cc.instantiate(this.bonusGame);
+        // this.node.addChild(this.bonusNode);
+        // this.bonusNode.setPosition(0,0);
     },
     loadGameLevel:function(){
         // this.timeAll = 0;
@@ -119,6 +135,21 @@ cc.Class({
             this.win_free.runAction(seq);
             this.showTime = 0;
             this.showFree = true;
+        }else if(stat == -2){//bonus
+            this.win_bouns.active = true;
+            this.win_bouns.scale = 0;
+
+            var seq = cc.sequence(
+                cc.scaleTo(0.2,1.1),
+                cc.scaleTo(0.1,1)
+            )
+
+            this.win_bouns.runAction(seq);
+            this.showTime = 0;
+            this.showBouns = true;
+            this.enterBonus = true;
+            this.loadBonus = false;
+            this.bonusNum = 0;
         }else{
             var showlayer;
             switch(stat)
@@ -159,6 +190,27 @@ cc.Class({
 
         // this.jackpot.addChild(node);
     },
+    enterBonusGame:function(){
+        var bonus_detail = this.bonusList[this.bonusNum];
+        //进入bonus游戏
+        this.bonusNode = cc.instantiate(this.bonusGame);
+        this.node.addChild(this.bonusNode);
+        this.bonusNode.getComponent("bouns_card").main = this;
+        this.bonusNode.getComponent("bouns_card").total_score = bonus_detail.isBonus;
+        
+        this.bonusNum++;
+    },
+    sendBonus:function(){
+        var send = {"gameId":this.gameLevelId,"score":this.bonusTotalScore};
+        message.sendData(messageDefine.bonus_result,send,this);
+    },
+    httpResp:function(resp){
+        cacheManager.initPlayerInfo(resp.playerInfo);
+        this.top.getComponent("topScene").updatePlayer();
+        this.bottom.getComponent("bottomScene").updateWin(resp.winNum);
+
+        this.bonusTotalScore = 0;
+    },
     // called every frame, uncomment this function to activate update callback
     update: function (dt) {
         // this.timeAll += dt;
@@ -169,15 +221,15 @@ cc.Class({
         var width = cc.winSize.width;
         var height = cc.winSize.height;
         // cc.log(width,height);
-        if(width > height){
-            this.node.rotation = 0;
-            this.node.scale = 1;
-        }else{
-            this.node.rotation = 90;
-            var sca = width/this.node.height;
+        // if(width > height){
+        //     this.node.rotation = 0;
+        //     this.node.scale = 1;
+        // }else{
+        //     this.node.rotation = 90;
+        //     var sca = width/this.node.height;
 
-            this.node.scale = sca;
-        }
+        //     this.node.scale = sca;
+        // }
 
         if(this.showLight){
             this.back_light.rotation += 1;
@@ -194,6 +246,35 @@ cc.Class({
             this.back_light.active = false;
             this.showLight = false;
             this.showFree = false;
+        }
+        if(this.isShowAddWinNum && this.showTime > 2 && this.showBouns){
+            if(this.enterBonus){
+                if(!this.loadBonus){
+                    if(this.bonusNum < this.bonusList.length){
+                        var bonus_detail = this.bonusList[this.bonusNum];
+                        //先停止奖励展示
+                        this.win_bouns.active = false;
+                        this.back_light.active = false;
+                        this.showLight = false;
+                        
+                        this.loadBonus = true;
+
+                        var callFun = cc.callFunc(this.enterBonusGame,this);
+
+                        this.jackpot.getComponent("slotScene").line_total.getComponent("lineManager").waverLine(bonus_detail.lineId,callFun);
+                    }else{
+                        this.enterBonus = false;
+                        //发送Bonus的结果
+                        this.sendBonus();
+                    }
+                }
+            }else{
+                this.occ_bg.active = false;
+                this.isShowAddWinNum = false;
+                this.showBouns = false;
+                this.loadBonu = false;
+                this.bonusNum = 0;
+            }
         }
     },
 });

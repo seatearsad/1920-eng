@@ -33,6 +33,9 @@ window.message = {
             case messageDefine.dice_game_result:
                 dataClass = gameDiceGetResultReq;
                 break;
+            case messageDefine.bonus_result:
+                dataClass = gameBonusResultReq;
+                break;
             default:
                 break;
         }
@@ -90,6 +93,9 @@ window.message = {
                 break;
             case messageDefine.dice_game_result_r:
                 r_class = gameDiceGetResultResp;
+                break;
+            case messageDefine.bonus_result_r:
+                r_class = gameBonusResultResp;
                 break;
             default:
                 break;

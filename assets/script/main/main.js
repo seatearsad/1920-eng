@@ -14,7 +14,8 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        cc.log("rotation",this.node.rotation);
+        // cc.view.enableAntiAlias(false);
+        cc.log("rotation",cc.view.isAntiAliasEnabled());
         if(!cacheManager.isInit)
             cacheManager.init();
         else
@@ -32,6 +33,14 @@ cc.Class({
         // this.dice_anim.getComponent(cc.Animation).stop("dice");
 
         if(typeof(cacheManager.playerInfo.id) == "undefined"){
+            //预加载
+            this.loadNum = 0;
+            this.loadDirFile = ["cover","ui/fruits","ui/zodiac","star","fruits","pre"];
+            var loadDirCall = this.loadDir.bind(this);
+            for(var i=0;i<this.loadDirFile.length;++i){
+                cc.loader.loadResDir(this.loadDirFile[i],loadDirCall);
+            }
+
             this.load.active = true;
             this.load_txt.node.active = true;
             this.load.getComponent("loading").main = this;
@@ -56,6 +65,15 @@ cc.Class({
         this.main_page.getComponent("main_page").main = this;
         this.dice_game.getComponent("diceGame").main = this;
     },
+    loadDir:function(err,res){
+        cc.log("loadDirRes");
+        this.loadNum++;
+        this.load.getComponent("loading").addLoadBar(0.1);
+        if(this.loadNum == this.loadDirFile.length){
+            //加载后执行登录程序
+            this.load.getComponent("loading").starLogin();
+        }
+    },
     startGame:function(){
         this.main_page.getComponent("main_page").enterGame();
     },
@@ -78,8 +96,8 @@ cc.Class({
         this.main_page.getComponent("main_page").loadCover();
     },
     removeLoading:function(){
-        this.load.removeFromParent();
-        this.load_txt.node.removeFromParent();
+        this.load.active = false;
+        this.load_txt.node.active = false;
         this.updatePlayer();
         // this.main_page.getComponent("main_page").loadCover();
     },
@@ -115,18 +133,18 @@ cc.Class({
         var height = cc.winSize.height;
         // cc.log("direction",this.node.parent.getComponentInChildren(cc.PageView).direction);
         // cc.log(width,height);cc.log(this.node.parent.width);
-        if(width > height){
-            this.node.parent.rotation = 0;
-            this.node.parent.scale = 1;
-            this.isFan = false;
-            // this.node.parent.getComponent(cc.Canvas).fitheight = true;
-        }else{
-            this.node.parent.rotation = 90;
-            var sca = width/this.node.parent.height;
+        // if(width > height){
+        //     this.node.parent.rotation = 0;
+        //     this.node.parent.scale = 1;
+        //     this.isFan = false;
+        //     // this.node.parent.getComponent(cc.Canvas).fitheight = true;
+        // }else{
+        //     this.node.parent.rotation = 90;
+        //     var sca = width/this.node.parent.height;
 
-            this.node.parent.scale = sca;
-            this.isFan = true;
-            // this.node.parent.getComponent(cc.Canvas).fitWidth = true;
-        }
+        //     this.node.parent.scale = sca;
+        //     this.isFan = true;
+        //     // this.node.parent.getComponent(cc.Canvas).fitWidth = true;
+        // }
     },
 });

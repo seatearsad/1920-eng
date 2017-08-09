@@ -28,6 +28,20 @@ cc.Class({
             
         }
     },
+    waverLine:function(lineId,callFun){
+        var lineN = "line_" + (lineId+1);
+        this.node.getChildByName(lineN).active = true;
+        var seq = cc.sequence(
+            cc.fadeOut(0.3),
+            cc.fadeIn(0.3),
+            cc.fadeOut(0.3),
+            cc.fadeIn(0.3),
+            cc.fadeOut(0.3),
+            cc.fadeIn(0.3),
+            callFun
+        )
+        this.node.getChildByName(lineN).runAction(seq);
+    },
     removeLine:function(allNum){
         for(var i=0;i<allNum;++i){
             var lineN = "line_" + (i+1);

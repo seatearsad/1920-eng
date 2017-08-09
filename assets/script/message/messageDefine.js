@@ -10,5 +10,7 @@ window.messageDefine = {
 	game_result:2001,
     game_result_r:62001,
     dice_game_result:2002,
-    dice_game_result_r:62002
+    dice_game_result_r:62002,
+    bonus_result:2003,
+    bonus_result_r:62003
 }

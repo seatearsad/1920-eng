@@ -358,7 +358,7 @@ cc.Class({
         this.win_label.string = this.win_num;
     },
     updateWin:function(win){
-        this.win_label.string = win;
+        this.win_label.string = this.win_label.string + win;
     }
     // called every frame, uncomment this function to activate update callback
     // update: function (dt) {

@@ -127,8 +127,13 @@ cc.Class({
             this.main.dice_bg.active = true;
             this.main.dice_game.active = true;
         }else if(this.pv.getCurrentPageIndex() > 0 && this.pv.getCurrentPageIndex() <= this.gameLevelList.length){
+            //loading字样
+            cc.log("click game!");
+            this.main.load.active = true;
+            this.main.load_txt.node.active = true;
             cacheManager.loadGameId = this.pv.getCurrentPageIndex() - 1;
             cc.director.preloadScene("game", function () {
+                cc.log("enter game!");
                 cc.director.loadScene("game");
             });
         }
@@ -136,14 +141,14 @@ cc.Class({
     },
     // called every frame, uncomment this function to activate update callback
     update: function (dt) {
-        this.totalTime += dt;
-        if(!this.isLoadPre && this.totalTime > 2){
-            //预加载
-            var loadDir = ["ui/fruits","ui/zodiac","star","fruits","pre"];
-            for(var i=0;i<loadDir.length;++i){
-                cc.loader.loadResDir(loadDir[i],this.loadDir);
-            }
-            this.isLoadPre = true;
-        }
+        // this.totalTime += dt;
+        // if(!this.isLoadPre && this.totalTime > 2){
+        //     //预加载
+        //     var loadDir = ["ui/fruits","ui/zodiac","star","fruits","pre"];
+        //     for(var i=0;i<loadDir.length;++i){
+        //         cc.loader.loadResDir(loadDir[i],this.loadDir);
+        //     }
+        //     this.isLoadPre = true;
+        // }
     },
 });

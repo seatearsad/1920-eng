@@ -8,6 +8,7 @@ module.exports = {
         gameLevel.ui = obj.ui;
         gameLevel.line = obj.line;
         gameLevel.bet = obj.bet;
+        gameLevel.bonus = obj.bonus;
         gameLevel.symbolList = new Array();
 
         gameLevel.allNum = allNum;
